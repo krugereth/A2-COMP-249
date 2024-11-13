@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.Scanner;
-import java.io.PrintWriter;
-import java.io.*;
+
 
 public class Part1 {
     protected static int CCBcountCopy;
@@ -19,15 +18,16 @@ public class Part1 {
         int invalidGenreCount = 0, tooManyFieldsCount = 0, tooFewFieldsCount = 0, missingFieldCount = 0;
 
 
-        System.out.println("Welcome to my book sorting program!");
+        System.out.println("Welcome to the Concordia Book Sorting Tool");
 
         Scanner sc = null;
         PrintWriter pw = null;
 
         try {
-            sc = new Scanner(new FileInputStream("oart1_input_file_names.txt"));
+            sc = new Scanner(new FileInputStream("part1_input_file_names.txt"));
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
+            System.out.println("The program will now exit");
             System.exit(0);
         }
 
@@ -49,40 +49,40 @@ public class Part1 {
             }
 
             while (readData.hasNextLine()) {
-                String recordedRecord = readData.nextLine();
-                String originalRecord = recordedRecord;
+                String record = readData.nextLine();
+                String originalRecord = record;
 
-                if (recordedRecord.charAt(0) == '"') {
-                    title = "\"" + recordedRecord.substring(1, recordedRecord.indexOf("\"", 2)) + "\"";
-                    recordedRecord = recordedRecord.substring(recordedRecord.indexOf('\"', 3));
+                if (record.charAt(0) == '"') {
+                    title = "\"" + record.substring(1, record.indexOf("\"", 2)) + "\"";
+                    record = record.substring(record.indexOf('\"', 3));
                 } else {
-                    title = recordedRecord.substring(0, recordedRecord.indexOf(','));
-                    recordedRecord = recordedRecord.substring(recordedRecord.indexOf(',', 2));
+                    title = record.substring(0, record.indexOf(','));
+                    record = record.substring(record.indexOf(',', 2));
                 }
 
                 char ch = ',';
                 int charCount = 0;
-                String rec = originalRecord;
+                String record2 = originalRecord;
 
                 if (originalRecord.charAt(0) == '\"') {
-                    rec = originalRecord.substring(originalRecord.indexOf('\"', 3));
+                    record2 = originalRecord.substring(originalRecord.indexOf('\"', 3));
                 }
 
-                for (int i = 0; i < rec.length(); i++) {
-                    if (rec.charAt(i) == ch)
+                for (int i = 0; i < record2.length(); i++) {
+                    if (record2.charAt(i) == ch)
                         charCount++;
                 }
 
 
-                price = recordedRecord.substring(recordedRecord.indexOf(',') + 1, recordedRecord.indexOf(',', 2));
-                recordedRecord = recordedRecord.substring(recordedRecord.indexOf(',', 2));
-                ISBN = recordedRecord.substring(recordedRecord.indexOf(',') + 1, recordedRecord.indexOf(',', 2));
-                recordedRecord = recordedRecord.substring(recordedRecord.indexOf(',', 2));
-                recordedRecord = recordedRecord.substring(recordedRecord.indexOf(',', 2));
-                year = recordedRecord.substring(recordedRecord.indexOf(',') + 1);
-                genre = recordedRecord.substring(recordedRecord.indexOf(',') + 1, recordedRecord.indexOf(',', 2));
-                authors = recordedRecord.substring(recordedRecord.indexOf(",") + 1, recordedRecord.indexOf(',', 2));
-                recordedRecord = recordedRecord.substring(recordedRecord.indexOf(',', 2));
+                price = record.substring(record.indexOf(',') + 1, record.indexOf(',', 2));
+                record = record.substring(record.indexOf(',', 2));
+                ISBN = record.substring(record.indexOf(',') + 1, record.indexOf(',', 2));
+                record = record.substring(record.indexOf(',', 2));
+                record = record.substring(record.indexOf(',', 2));
+                year = record.substring(record.indexOf(',') + 1);
+                genre = record.substring(record.indexOf(',') + 1, record.indexOf(',', 2));
+                authors = record.substring(record.indexOf(",") + 1, record.indexOf(',', 2));
+
 
                 int numFields = charCount + 1;
                 try {
@@ -96,13 +96,8 @@ public class Part1 {
                     } else if (title.equals(" ") || authors.equals(" ") || price.equals(" ") || ISBN.equals(" ") || genre.equals(" ") || year.equals(" ")) {
                         throw new MissingFieldException("Error: Missing Field");
                     }
-                } catch (TooManyFieldsException e) {
-                    e.getMessage();
-                } catch (TooFewFieldsException e) {
-                    e.getMessage();
-                } catch (UnknownGenreException e) {
-                    e.getMessage();
-                } catch (MissingFieldException e) {
+                } catch (TooManyFieldsException | TooFewFieldsException | UnknownGenreException |
+                         MissingFieldException e) {
                     e.getMessage();
                 }
 
@@ -131,15 +126,16 @@ public class Part1 {
                     //print writer object that will write in each genre's file
                     PrintWriter genreFileWriter = null;
 
+                    String recordInformation = title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year;
                     switch (genre) {
                         case "CCB":
                             CCBcount++;
                             try {
                                 genreFileWriter = new PrintWriter(new FileOutputStream("Cartoons_Comics_Books.csv.txt", true));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                System.out.println("File not found: " + e.getMessage());
                             }
-                            genreFileWriter.println(title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year);
+                            genreFileWriter.println(recordInformation);
                             genreFileWriter.flush();
                             genreFileWriter.close();
                             break;
@@ -149,9 +145,9 @@ public class Part1 {
                             try {
                                 genreFileWriter = new PrintWriter(new FileOutputStream("Hobbies_Collectibles_Books.csv.txt", true));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                System.out.println("File not found: " + e.getMessage());
                             }
-                            genreFileWriter.println(title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year);
+                            genreFileWriter.println(recordInformation);
                             genreFileWriter.flush();
                             genreFileWriter.close();
                             break;
@@ -161,9 +157,9 @@ public class Part1 {
                             try {
                                 genreFileWriter = new PrintWriter(new FileOutputStream("Movies_TV.csv.txt", true));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                System.out.println("File not found: " + e.getMessage());
                             }
-                            genreFileWriter.println(title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year);
+                            genreFileWriter.println(recordInformation);
                             genreFileWriter.flush();
                             genreFileWriter.close();
                             break;
@@ -173,9 +169,9 @@ public class Part1 {
                             try {
                                 genreFileWriter = new PrintWriter(new FileOutputStream("Music_Radio_Books.csv.txt", true));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                System.out.println("File not found: " + e.getMessage());
                             }
-                            genreFileWriter.println(title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year);
+                            genreFileWriter.println(recordInformation);
                             genreFileWriter.flush();
                             genreFileWriter.close();
                             break;
@@ -185,9 +181,9 @@ public class Part1 {
                             try {
                                 genreFileWriter = new PrintWriter(new FileOutputStream("Nostalgia_Eclectic_Books.csv.txt", true));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                System.out.println("File not found: " + e.getMessage());
                             }
-                            genreFileWriter.println(title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year);
+                            genreFileWriter.println(recordInformation);
                             genreFileWriter.flush();
                             genreFileWriter.close();
                             break;
@@ -197,9 +193,10 @@ public class Part1 {
                             try {
                                 genreFileWriter = new PrintWriter(new FileOutputStream("Old_Time_Radio.csv.txt", true));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                System.out.println("File not found: " + e.getMessage());
                             }
-                            genreFileWriter.println(title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year);
+                            genreFileWriter.println(recordInformation);
+
                             genreFileWriter.flush();
                             genreFileWriter.close();
                             break;
@@ -209,9 +206,9 @@ public class Part1 {
                             try {
                                 genreFileWriter = new PrintWriter(new FileOutputStream("Sports_Sports_Memorabilia.csv.txt", true));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                System.out.println("File not found: " + e.getMessage());
                             }
-                            genreFileWriter.println(title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year);
+                            genreFileWriter.println(recordInformation);
                             genreFileWriter.flush();
                             genreFileWriter.close();
                             break;
@@ -221,9 +218,9 @@ public class Part1 {
                             try {
                                 genreFileWriter = new PrintWriter(new FileOutputStream("Trains_Planes_Automobiles.csv.txt", true));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                System.out.println("File not found: " + e.getMessage());
                             }
-                            genreFileWriter.println(title + "," + authors + "," + price + "," + ISBN + "," + genre + "," + year);
+                            genreFileWriter.println(recordInformation);
                             genreFileWriter.flush();
                             genreFileWriter.close();
                             break;
